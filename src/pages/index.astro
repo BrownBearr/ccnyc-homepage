@@ -104,7 +104,7 @@ canvas{display:block;position:fixed;inset:0;z-index:3;pointer-events:none}
 .shot img.on{opacity:.60}
 .shot-info{position:absolute;inset:0;z-index:1;box-sizing:border-box;padding:18px 20px;overflow:auto;scrollbar-width:thin;background:transparent;color:var(--ink);font:11px/1.45 var(--mono);opacity:0;pointer-events:none;transition:opacity .35s ease}
 .shot-info p{margin:0 0 12px}.shot-info ul{margin:0;padding-left:18px}.shot-info li{margin:0 0 5px}.shot-info-title{font-weight:500;text-transform:uppercase;letter-spacing:.08em}
-.about-panel{font-family:"Red Hat Mono",monospace;font-size:16px;line-height:1.55;letter-spacing:-.015em;caret-color:var(--ink);cursor:text}.about-panel:focus{outline:1px solid rgba(231,229,222,.28);outline-offset:-1px}.about-panel ul{padding-left:18px;list-style:disc}.about-panel.typing li:empty{visibility:hidden}.about-gatherings-title{margin-top:20px;font-family:"Karla",sans-serif;font-size:19px;font-weight:500;font-style:italic;letter-spacing:-.01em}.about-panel .typing-line::after{content:"";display:inline-block;width:2px;height:1.05em;margin-left:4px;vertical-align:-.14em;background:currentColor;animation:about-cursor .7s steps(1) infinite}@keyframes about-cursor{50%{opacity:0}}
+.about-panel{font-family:"Red Hat Mono",monospace;font-size:16px;line-height:1.55;letter-spacing:-.015em;caret-color:var(--ink);cursor:text}.about-panel:focus{outline:1px solid rgba(231,229,222,.28);outline-offset:-1px}.about-panel ul{padding-left:18px;list-style:disc}.about-gatherings-title{margin-top:20px;font-family:"Karla",sans-serif;font-size:19px;font-weight:500;font-style:italic;letter-spacing:-.01em}
 .shot-panel-link{display:inline-block;margin-top:10px;padding:8px 10px;border:1px solid currentColor;color:var(--ink);text-decoration:none;text-transform:uppercase;letter-spacing:.06em}
 .shot-panel-link:hover{background:var(--ink);color:#191919}
 .agenda-panel{font-size:14px;line-height:1.5}.agenda-panel>.shot-info-title{font-size:16px}.agenda-mini{display:grid;gap:14px;margin:8px 0 18px}.agenda-mini div{display:grid;grid-template-columns:7.5em 1fr;gap:12px}.agenda-mini time{color:var(--muted)}.agenda-mini strong{font-weight:500}.agenda-mini span{display:block;color:var(--muted)}
@@ -1133,37 +1133,6 @@ void main(){
   signupForm.innerHTML = '<input name="name" type="text" maxlength="60" autocomplete="name" placeholder="Your name" aria-label="Your name" required><input name="instagram" type="text" maxlength="30" autocomplete="off" placeholder="Instagram (optional)" aria-label="Instagram handle, optional"><button type="submit">Sign up</button>';
   lineup.before(signupForm);
   const signupName = signupForm.elements.name, signupInstagram = signupForm.elements.instagram, signupSubmit = signupForm.querySelector('button');
-  const aboutNodes = [...info.querySelectorAll('p, li')].map(element => ({ element, text:element.textContent }));
-  let aboutTimer;
-  let aboutEdited = false;
-  const stopAboutTyping = () => {
-    clearInterval(aboutTimer);
-    info.classList.remove('typing');
-    aboutNodes.forEach(item => item.element.classList.remove('typing-line'));
-  };
-  info.addEventListener('beforeinput', stopAboutTyping);
-  info.addEventListener('input', () => {
-    aboutEdited = true;
-    aboutNodes.forEach(item => { if (item.element.isConnected) item.text = item.element.textContent; });
-  });
-  const typeAbout = () => {
-    clearInterval(aboutTimer);
-    aboutNodes.forEach(item => { item.element.textContent = ''; item.element.classList.remove('typing-line'); });
-    info.classList.add('typing');
-    let nodeIndex = 0, charIndex = 0;
-    aboutNodes[0]?.element.classList.add('typing-line');
-    aboutTimer = setInterval(() => {
-      const item = aboutNodes[nodeIndex];
-      if (!item) { clearInterval(aboutTimer); info.classList.remove('typing'); aboutNodes.forEach(entry => entry.element.classList.remove('typing-line')); return; }
-      item.element.textContent += item.text.slice(charIndex, charIndex + 3);
-      charIndex += 3;
-      if (charIndex >= item.text.length) {
-        item.element.classList.remove('typing-line');
-        nodeIndex += 1; charIndex = 0;
-        aboutNodes[nodeIndex]?.element.classList.add('typing-line');
-      }
-    }, 18);
-  };
   const capacity = 10;
   let signupLoading = false;
 
@@ -1246,7 +1215,6 @@ void main(){
   });
   renderLineup([]);
   const showPanel = mode => {
-    if (mode !== 'about') stopAboutTyping();
     shot.classList.toggle('about', mode === 'about');
     shot.classList.toggle('agenda', mode === 'agenda');
     shot.classList.toggle('signup', mode === 'signup');
@@ -1256,7 +1224,6 @@ void main(){
     agenda.setAttribute('aria-hidden', String(mode !== 'agenda'));
     signup.setAttribute('aria-hidden', String(mode !== 'signup'));
     calendar.setAttribute('aria-hidden', String(mode !== 'calendar'));
-    if (mode === 'about' && !aboutEdited) typeAbout();
     if (mode === 'signup') loadLineup();
     if (mode) set(null, false);
   };
