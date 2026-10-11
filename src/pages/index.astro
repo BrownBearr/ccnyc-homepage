@@ -98,7 +98,8 @@ canvas{display:block;position:fixed;inset:0;z-index:3;pointer-events:none}
 #meetBtn{position:relative}
 .menu-panel .links{flex-direction:column;align-items:flex-start;gap:12px}
 /* the picture Pier 57 projects, bottom left */
-.shot{opacity:0;transition:none!important;margin:0;width:100%;aspect-ratio:4/3;position:relative;overflow:hidden;background:#1d1d1a;box-shadow:0 0 30px rgba(255,244,210,.10)}
+.shot{opacity:0;transition:none!important;margin:0;width:100%;aspect-ratio:4/3;position:relative;overflow:hidden;background:#1d1d1a;box-shadow:0 0 30px rgba(255,244,210,.10);animation:projector-drift 16s ease-in-out infinite}
+@keyframes projector-drift{0%,100%{transform:translate3d(0,0,0) rotate(0)}25%{transform:translate3d(7vw,-6vh,0) rotate(-.3deg)}55%{transform:translate3d(13vw,-15vh,0) rotate(.3deg)}78%{transform:translate3d(3vw,-10vh,0) rotate(-.18deg)}}
 .shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.9) contrast(.9) brightness(.94);opacity:0;transition:opacity .9s ease}
 .shot img.on{opacity:.60}
 .shot-info{position:absolute;inset:0;z-index:1;box-sizing:border-box;padding:18px 20px;overflow:auto;scrollbar-width:thin;background:transparent;color:var(--ink);font:11px/1.45 var(--mono);opacity:0;pointer-events:none;transition:opacity .35s ease}
@@ -113,7 +114,7 @@ canvas{display:block;position:fixed;inset:0;z-index:3;pointer-events:none}
 .projector-signup-form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:7px;margin:10px 0 14px}.projector-signup-form input,.projector-signup-form button{min-width:0;box-sizing:border-box;border:1px solid rgba(231,229,222,.35);border-radius:0;background:rgba(25,25,25,.45);color:var(--ink);font:12px/1.2 var(--mono);padding:8px}.projector-signup-form input::placeholder{color:var(--muted)}.projector-signup-form button{cursor:pointer;text-transform:uppercase}.projector-signup-form button:hover{background:var(--ink);color:#191919}.projector-signup-form :disabled{opacity:.45;cursor:not-allowed}
 .agenda-signup-qr{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:20px;padding-top:14px;border-top:1px solid rgba(231,229,222,.2);font-size:15px;line-height:1.2;text-align:center;text-transform:uppercase;letter-spacing:.06em}.shot.agenda .agenda-signup-qr img{position:static!important;width:140px!important;height:140px!important;object-fit:contain!important;filter:none!important;opacity:1!important;flex:0 0 auto}
 .projector-lineup{margin:8px 0 0;padding:0;list-style:none;display:grid;gap:3px}.projector-lineup li{display:grid;grid-template-columns:2em minmax(0,1fr) auto;gap:8px;align-items:baseline;margin:0}.projector-lineup .position{color:var(--muted)}.projector-lineup .available{color:var(--muted)}.projector-lineup a{color:var(--ink);text-decoration:none;text-align:right}
-.shot.about,.shot.agenda,.shot.signup,.shot.calendar{aspect-ratio:auto;height:min(60vh,520px);background:transparent;box-shadow:none}
+.shot.about,.shot.agenda,.shot.signup,.shot.calendar{aspect-ratio:auto;height:min(60vh,520px);background:transparent;box-shadow:none;animation:none}
 .shot.about img,.shot.agenda img,.shot.signup img,.shot.calendar img{opacity:0!important}
 .shot.about img.on,.shot.agenda img.on,.shot.signup img.on,.shot.calendar img.on{opacity:.24!important;filter:saturate(.65) brightness(.62) contrast(.82)}
 .shot.about .about-panel,.shot.agenda .agenda-panel,.shot.signup .signup-panel,.shot.calendar .calendar-panel{opacity:1;pointer-events:auto}
@@ -138,6 +139,9 @@ canvas{display:block;position:fixed;inset:0;z-index:3;pointer-events:none}
   .ph{display:none!important}
   .col-a{display:flex!important;left:50%;right:auto;top:28vh;bottom:auto;width:56vw;transform:translateX(-50%)}
   .col-a.info-open{top:20vh;width:86vw}
+  .shot{animation:projector-drift-mobile 16s ease-in-out infinite}
+  .shot.about,.shot.agenda,.shot.signup,.shot.calendar{animation:none}
+  @keyframes projector-drift-mobile{0%,100%{transform:translate3d(0,0,0) rotate(0)}25%{transform:translate3d(-15vw,-7vh,0) rotate(-.4deg)}55%{transform:translate3d(14vw,-15vh,0) rotate(.35deg)}78%{transform:translate3d(-9vw,-11vh,0) rotate(-.2deg)}}
   .shot.about,.shot.agenda,.shot.signup,.shot.calendar{height:min(58vh,490px)}
   .shot{display:block!important}
   #beam{display:block!important}
@@ -150,7 +154,7 @@ canvas{display:block;position:fixed;inset:0;z-index:3;pointer-events:none}
 .sub{position:fixed;left:0;right:0;top:var(--sub,30vh);z-index:4;margin:0;text-align:center;color:var(--ink);pointer-events:none;
   font:italic 400 17px/1 Karla,system-ui,sans-serif;letter-spacing:.01em;opacity:0;transition:opacity .8s ease .3s}
 .sub.on{opacity:1}
-@media (prefers-reduced-motion:reduce){.blk,.ph figcaption,.hint{transition:none}}
+@media (prefers-reduced-motion:reduce){.blk,.ph figcaption,.hint{transition:none}.shot{animation:none}}
 .about{display:grid;gap:14px}
 .lede{margin:0;color:var(--ink);text-wrap:pretty}
 .space{margin:0 auto;padding:0;list-style:none;display:grid;gap:2px;color:var(--ink)}
