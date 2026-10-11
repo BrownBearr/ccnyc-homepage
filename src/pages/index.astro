@@ -131,7 +131,8 @@ canvas{display:block;position:fixed;inset:0;z-index:3;pointer-events:none}
 .pier-pin:focus-visible{outline:none}
 @media (max-width:768px){
   .topbar{left:2.5vh;right:2.5vh;top:calc(2.5vh + env(safe-area-inset-top,0px));gap:20px;align-items:center}
-  .topbar>.menu-btn{min-height:42px;padding:0 4px;font-size:15px;display:inline-flex;align-items:center}
+  .topbar>#calendarNavBtn{display:none}
+  .topbar>#menuBtn{display:block;width:42px;height:42px;min-height:42px;padding:0;font-size:0;background:linear-gradient(currentColor,currentColor) center calc(50% - 7px)/26px 2px no-repeat,linear-gradient(currentColor,currentColor) center/26px 2px no-repeat,linear-gradient(currentColor,currentColor) center calc(50% + 7px)/26px 2px no-repeat}
   .menu-panel{position:fixed;left:2.5vh!important;top:calc(2.5vh + env(safe-area-inset-top,0px) + 48px);width:calc(100vw - 5vh);min-width:0;max-height:calc(100dvh - 90px);overflow:auto;padding:20px 22px}
   .menu-panel .links{gap:17px}.menu-panel .links a{display:block;font-size:15px;line-height:1.35}
   .ph{display:none!important}
