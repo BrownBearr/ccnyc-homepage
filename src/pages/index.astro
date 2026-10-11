@@ -139,7 +139,9 @@ canvas{display:block;position:fixed;inset:0;z-index:3;pointer-events:none}
   .ph{display:none!important}
   .col-a{display:flex!important;left:50%;right:auto;top:17vh;bottom:auto;width:56vw;transform:translateX(-50%)}
   .col-a.info-open{top:20vh;width:86vw}
-  .shot{animation:none}
+  .shot{animation:projector-drift-mobile 10s ease-in-out infinite}
+  .shot.about,.shot.agenda,.shot.signup,.shot.calendar{animation:none}
+  @keyframes projector-drift-mobile{0%,100%{transform:translate3d(0,0,0)}35%{transform:translate3d(-3vw,-.5vh,0)}70%{transform:translate3d(3vw,.5vh,0)}}
   .shot.about,.shot.agenda,.shot.signup,.shot.calendar{height:min(58vh,490px)}
   .shot{display:block!important}
   #beam{display:block!important}
