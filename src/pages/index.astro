@@ -137,11 +137,9 @@ canvas{display:block;position:fixed;inset:0;z-index:3;pointer-events:none}
   .menu-panel{position:fixed;left:2.5vh!important;top:calc(2.5vh + env(safe-area-inset-top,0px) + 48px);width:calc(100vw - 5vh);min-width:0;max-height:calc(100dvh - 90px);overflow:auto;padding:20px 22px}
   .menu-panel .links{gap:17px}.menu-panel .links a{display:block;font-size:15px;line-height:1.35}
   .ph{display:none!important}
-  .col-a{display:flex!important;left:50%;right:auto;top:28vh;bottom:auto;width:56vw;transform:translateX(-50%)}
+  .col-a{display:flex!important;left:50%;right:auto;top:17vh;bottom:auto;width:56vw;transform:translateX(-50%)}
   .col-a.info-open{top:20vh;width:86vw}
-  .shot{animation:projector-drift-mobile 16s ease-in-out infinite}
-  .shot.about,.shot.agenda,.shot.signup,.shot.calendar{animation:none}
-  @keyframes projector-drift-mobile{0%,100%{transform:translate3d(0,0,0) rotate(0)}25%{transform:translate3d(-15vw,-7vh,0) rotate(-.4deg)}55%{transform:translate3d(14vw,-15vh,0) rotate(.35deg)}78%{transform:translate3d(-9vw,-11vh,0) rotate(-.2deg)}}
+  .shot{animation:none}
   .shot.about,.shot.agenda,.shot.signup,.shot.calendar{height:min(58vh,490px)}
   .shot{display:block!important}
   #beam{display:block!important}
