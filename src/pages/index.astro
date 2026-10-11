@@ -1281,9 +1281,30 @@ void main(){
     const bot = [r.right, r.bottom];
     const gx = compact ? (r.left + r.right) / 2 : r.right;
     const gy = compact ? r.bottom : (r.top + r.bottom) / 2;
-    const gr = g.createLinearGradient(px, py, gx, gy);
-    gr.addColorStop(0, `rgba(255,250,235,${0.12 * lit})`); gr.addColorStop(0.5, `rgba(255,250,235,${0.045 * lit})`); gr.addColorStop(1, `rgba(255,250,235,${0.02 * lit})`);
-    g.fillStyle = gr; g.beginPath(); g.moveTo(px, py - 3); g.lineTo(...top); g.lineTo(...bot); g.lineTo(px, py + 3); g.closePath(); g.fill();
+    // Several soft cones overlap like light scattering through humid night air.
+    // The outer layers are wider and more blurred, while the inner cone keeps
+    // just enough direction to remain connected to Pier 57.
+    const midX = (top[0] + bot[0]) / 2, midY = (top[1] + bot[1]) / 2;
+    const edgeLength = Math.max(1, Math.hypot(bot[0] - top[0], bot[1] - top[1]));
+    const drawBeam = (expand, apexWidth, opacity, blur) => {
+      const scale = 1 + expand / edgeLength;
+      const a = [midX + (top[0] - midX) * scale, midY + (top[1] - midY) * scale];
+      const b = [midX + (bot[0] - midX) * scale, midY + (bot[1] - midY) * scale];
+      const gr = g.createLinearGradient(px, py, gx, gy);
+      gr.addColorStop(0, `rgba(255,250,235,${opacity * lit})`);
+      gr.addColorStop(.42, `rgba(255,250,235,${opacity * .42 * lit})`);
+      gr.addColorStop(1, `rgba(255,250,235,${opacity * .08 * lit})`);
+      g.filter = `blur(${blur}px)`; g.fillStyle = gr;
+      g.beginPath(); g.moveTo(px, py - apexWidth); g.lineTo(...a); g.lineTo(...b); g.lineTo(px, py + apexWidth); g.closePath(); g.fill();
+    };
+    g.save(); g.globalCompositeOperation = 'screen';
+    drawBeam(58, 18, .045, 28);
+    drawBeam(28, 10, .060, 14);
+    drawBeam(8, 5, .052, 5);
+    const sourceGlow = g.createRadialGradient(px, py, 0, px, py, 42);
+    sourceGlow.addColorStop(0, `rgba(255,250,235,${.09 * lit})`); sourceGlow.addColorStop(1, 'rgba(255,250,235,0)');
+    g.filter = 'blur(8px)'; g.fillStyle = sourceGlow; g.fillRect(px - 52, py - 52, 104, 104);
+    g.restore();
     shot.style.opacity = on;
   })(0);
 })();
