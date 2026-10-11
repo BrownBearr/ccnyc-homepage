@@ -88,6 +88,7 @@ canvas{display:block;position:fixed;inset:0;z-index:3;pointer-events:none}
 .menu-btn:focus-visible,.topbar .icon:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
 .topbar .icon{display:block;width:26px;height:26px;margin-top:2px;color:var(--muted);transition:color .2s}
 .topbar .icon:hover{color:var(--ink)}
+.topbar .icon.linkedin{color:#fff}
 .topbar .icon svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6}
 .topbar .icon svg .dot,.topbar .icon svg .fill{fill:currentColor;stroke:none}
 .menu-panel{position:absolute;left:0;top:34px;padding:18px 22px;background:rgba(25,25,25,.985);box-sizing:border-box;box-shadow:0 0 0 1px var(--rule);min-width:260px}
@@ -213,7 +214,7 @@ ol li.next span::before{content:"Next · ";color:var(--muted)}
   <a class="menu-btn" href="#calendar" id="calendarNavBtn">calendar</a>
 
   <a class="icon" href="https://www.instagram.com/creativecodingnyc/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1" class="dot"/></svg></a>
-  <a class="icon" href="https://discord.gg/qbr6XNVsFU" target="_blank" rel="noopener" aria-label="Discord"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="fill" d="M19.6 5.6A16.4 16.4 0 0 0 15.5 4.3l-.5 1a15 15 0 0 0-6 0l-.5-1a16.4 16.4 0 0 0-4.1 1.3C1.8 9.6 1.1 13.4 1.5 17.2a16.6 16.6 0 0 0 5 2.5l1.1-1.7a10.7 10.7 0 0 1-1.7-.8l.4-.3a11.8 11.8 0 0 0 11.4 0l.4.3c-.5.3-1.1.6-1.7.8l1.1 1.7a16.6 16.6 0 0 0 5-2.5c.5-4.4-.7-8.2-2.9-11.6ZM8.5 14.9c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2Zm7 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2Z"/></svg></a>
+  <a class="icon linkedin" href="https://www.linkedin.com/in/hollandblumer" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle class="fill" cx="6.5" cy="6.5" r="1.7"/><rect class="fill" x="5" y="10" width="3" height="9" rx=".35"/><path class="fill" d="M10.5 10h3v1.3c.9-1.15 2-1.7 3.45-1.7 3 0 3.55 1.95 3.55 4.55V19h-3.2v-4.35c0-1.05-.02-2.4-1.55-2.4-1.55 0-1.8 1.2-1.8 2.35V19h-3.45Z"/></svg></a>
   <nav class="menu-panel" id="menuPanel" hidden aria-label="Menu"><ul class="links">
       <li><a href="#about" id="infoBtn" aria-label="About Creative Coding NYC"><span class="b" style="--o:-1.0">Abo</span><span class="b" style="--o:0">ut</span></a></li>
       <li><a href="#agenda" id="agendaBtn" aria-label="Meeting agenda"><span class="b" style="--o:-2">Mee</span><span class="b" style="--o:-1">tin</span><span class="b" style="--o:0">g</span><span class="b" style="--o:1">&nbsp;age</span><span class="b" style="--o:2">nda</span></a></li>
