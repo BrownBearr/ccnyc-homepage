@@ -118,7 +118,7 @@ export default function DemoSignup({ endpoint }: { endpoint: string }) {
             <div className="meetingProgress"><div className="progressTrack" role="progressbar" aria-label="Tuesday agenda progress until demos" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}><span style={{ height: `${progress}%` }} /></div></div>
             <ol className="agenda"><li><time>6:00–7:20</time><div><strong>Chill, code, collaborate</strong><span>Settle in, make something, and meet people.</span></div></li><li><time>7:20–7:30</time><div><strong>Announcements</strong><span>Community news, events, and opportunities.</span></div></li><li><time>7:30–8:00</time><div><strong>Demos</strong><span>Members share what they’ve been working on.</span></div></li></ol>
           </div>
-          <a className="qrPrompt" href="#demo-signup"><span className="qrCopy"><strong>Sign up for demos</strong><small>Scan the QR code</small></span><img src="https://quickchart.io/qr?text=https%3A%2F%2Fccnyc.space%2Fmeeting-agenda&size=220&margin=2&dark=ffffff&light=00000000" width="150" height="150" alt="QR code for the CCNYC demo signup page" /></a>
+          <a className="qrPrompt" href="#demo-signup"><span className="qrCopy"><strong>Sign up for demos</strong><small>Scan the QR code</small></span><img src="https://quickchart.io/qr?text=https%3A%2F%2Fccnyc.space%2Fmeeting-agenda%23demo-signup&size=220&margin=2&dark=ffffff&light=00000000" width="150" height="150" alt="QR code for the CCNYC demo signup form" /></a>
         </section>
         <section className="demoSection" id="demo-signup" aria-labelledby="demo-heading">
           <h2 className="demoHeading" id="demo-heading">Demo signup</h2>
