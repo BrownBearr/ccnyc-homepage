@@ -11,7 +11,7 @@ export default function PosterMaker({ dateLabel, location, homeSkin = false }: P
   return (
     <main className={`maker${homeSkin ? " homeSkin" : ""}`} data-date={dateLabel} data-location={location} data-time="6–8 PM">
       {homeSkin && <HomeNav />}
-      <header className="makerHeader"><div><a href="/" className="brand">CCNYC</a><p>{homeSkin ? "creative coding nyc" : "Build a poster"}</p></div>{!homeSkin && <a href="/meeting-agenda">Meeting agenda →</a>}</header>
+      <header className="makerHeader"><div><a href="/" className="brand">CCNYC</a><p>{homeSkin ? "creative coding nyc" : "Build a poster"}</p></div>{!homeSkin && <a href="/#agenda">Meeting agenda →</a>}</header>
       <div className="workspace">
         <section className="posterWrap" aria-label="Poster preview">
           <div className="poster" id="poster"><canvas id="shader-canvas" width="1080" height="1350"/><canvas id="ascii-canvas" width="1080" height="1350" aria-hidden="true"/><div className="posterCopy"><h1>CCNYC</h1><div className="eventCopy"><p>{dateLabel}</p><p>{location}</p><p className="posterTime">6–8 PM</p></div></div></div>

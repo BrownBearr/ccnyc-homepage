@@ -1030,6 +1030,17 @@ void main(){
   signupBtn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); showPanel(shot.classList.contains('signup') ? null : 'signup'); });
   calendarBtn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); showPanel(shot.classList.contains('calendar') ? null : 'calendar'); });
   calendarNavBtn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); showPanel(shot.classList.contains('calendar') ? null : 'calendar'); });
+  const showPanelFromHash = () => {
+    const mode = {
+      '#about': 'about',
+      '#agenda': 'agenda',
+      '#demo-signup': 'signup',
+      '#calendar': 'calendar'
+    }[location.hash];
+    if (mode) showPanel(mode);
+  };
+  addEventListener('hashchange', showPanelFromHash);
+  showPanelFromHash();
   addEventListener('click', () => set(null, false));
   addEventListener('keydown', e => { if (e.key === 'Escape') set(null, false); });
   new MutationObserver(() => bar.classList.toggle('on', document.getElementById('board').classList.contains('on')))

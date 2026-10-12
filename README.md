@@ -15,13 +15,13 @@ Copy `.env.example` to `.env` and fill in the values used by the site.
 
 ## Presentation signup setup
 
-The `/meeting-agenda` page uses a Google Sheet as a lightweight shared
+The homepage demo-signup panel uses a Google Sheet as a lightweight shared
 store. It keeps up to 10 names and optional Instagram handles for each Tuesday
 meetup. The current list remains visible through Monday and automatically
 resets when the following Tuesday begins; older rows remain in the sheet as
 history.
 
-The page explicitly requests the most recent Tuesday in New York time. On
+The panel explicitly requests the most recent Tuesday in New York time. On
 Tuesday, that means the new Tuesday's list starts empty and remains empty until
 someone signs up for that date.
 
