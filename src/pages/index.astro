@@ -252,7 +252,12 @@ varying vec2 vUv; varying vec3 vN;
 uniform sampler2D t0, t1, t2, t3;
 uniform vec3 ink, bg, grey;
 uniform float fill;
+uniform float finished;
 uniform vec2 px;                         // one screen pixel, in face uv
+
+float paperNoise(vec2 p){
+  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
 
 float tex1(float f, vec2 uv){
   uv = clamp(uv, 0.0, 1.0);
@@ -278,6 +283,14 @@ void main(){
   bool loading = mod(f, 2.0) < 0.5;
   vec3 col = loading ? mix(grey, ink, 1.0 - smoothstep(fill - 0.004, fill + 0.004, uv.x)) : ink;
   m *= smoothstep(0.04, 0.22, n.y) * max(smoothstep(0.985, 0.999, n.y), smoothstep(0.0, 0.06, turning));
+  if (!loading || finished > 0.5) {
+    // Smooth matte ribbon: soft tonal drift with very fine paper fibres.
+    float grain = paperNoise(floor(uv * vec2(1050.0, 290.0)));
+    float fibre = paperNoise(vec2(floor(uv.x * 420.0), floor(uv.y * 760.0)));
+    float broadTone = 0.94 + 0.06 * sin(uv.x * 5.4 + uv.y * 2.2);
+    float paper = broadTone * (0.90 + 0.08 * grain + 0.02 * fibre);
+    m *= paper;
+  }
   float light = 0.25 + 0.8 * max(dot(n, normalize(vec2(-0.35, 1.0))), 0.0);
   gl_FragColor = vec4(mix(bg, col, m) * mix(1.0, light, smoothstep(0.0, 0.08, turning)), 1.0);
 }`;
@@ -427,6 +440,7 @@ function bar(g, sh, list, prog, step, dir){
   sh.setUniform('bg', rgb(BG));
   sh.setUniform('grey', rgb(GREY));
   sh.setUniform('fill', loadFill());
+  sh.setUniform('finished', allReveal ? 1 : 0);
   const dpr = g.pixelDensity();
   sh.setUniform('px', [1 / (barW() * dpr), 1 / (barH() * dpr)]);
   g.beginShape(TRIANGLES);
@@ -864,11 +878,19 @@ void main(){
   // Match the map paper to #191919 instead of the reference's #141412.
   vec3 col = vec3(0.098, 0.098, 0.098) + grain;
   col += vec3(0.75) * scan * 0.34;
-  // Broken, gently moving highlights only where the ground pass marks the Hudson.
-  float ripplePhase = uv.y * res.y / 17.0 + sin(uv.x * 24.0 + time * 0.45) * 0.55 - time * 0.8;
-  float ripple = pow(max(0.0, sin(ripplePhase)), 18.0);
-  ripple *= smoothstep(0.28, 0.72, n(vec2(floor(uv.x * res.x / 42.0), floor(uv.y * res.y / 17.0))));
-  col += vec3(0.34, 0.33, 0.30) * ripple * hudson * shown * 0.34;
+  // Expanding elliptical wakes break across a slower, softly drifting shimmer.
+  // The Hudson mask keeps these rings out of the streets and buildings.
+  vec2 wakeA = (q - vec2(0.25, 0.60)) * vec2(1.0, 1.75);
+  vec2 wakeB = (q - vec2(0.40, 0.36)) * vec2(1.0, 1.55);
+  float ringA = pow(max(0.0, sin(length(wakeA) * 82.0 - time * 1.15)), 24.0);
+  float ringB = pow(max(0.0, sin(length(wakeB) * 68.0 - time * 0.86 + 2.4)), 28.0);
+  float brokenA = smoothstep(0.38, 0.76, fbm(q * 13.0 + vec2(time * 0.07, -time * 0.04)));
+  float brokenB = smoothstep(0.44, 0.80, fbm(q * 17.0 + vec2(-time * 0.05, time * 0.06) + 8.0));
+  float flowPhase = uv.y * res.y / 15.0 + fbm(q * 6.0 + vec2(time * 0.04, 0.0)) * 4.5 - time * 0.72;
+  float flow = pow(max(0.0, sin(flowPhase)), 20.0);
+  flow *= smoothstep(0.48, 0.76, fbm(q * 20.0 + vec2(time * 0.08, -time * 0.03)));
+  float waterLight = ringA * brokenA * 0.28 + ringB * brokenB * 0.22 + flow * 0.18;
+  col += vec3(0.34, 0.33, 0.30) * waterLight * hudson * shown;
   col += vec3(0.07, 0.07, 0.065) * w * shown;
   col = mix(col, vec3(0.70, 0.69, 0.66), min(1.0, ink) * 0.62 * shown);
   gl_FragColor = vec4(col, 1.0);
@@ -1258,8 +1280,7 @@ void main(){
     next.onerror = () => { next.onerror = null; next.src = standIn(n); };
     next.src = srcs[n];
   }, 4200);
-  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  (function frame(now){
+  (function frame(){
     requestAnimationFrame(frame);
     const d = Math.min(2, devicePixelRatio || 1), W = innerWidth, H = innerHeight;
     if (cv.width !== Math.round(W * d) || cv.height !== Math.round(H * d)){ cv.width = Math.round(W * d); cv.height = Math.round(H * d); }
@@ -1298,12 +1319,13 @@ void main(){
       g.beginPath(); g.moveTo(px, py - apexWidth); g.lineTo(...a); g.lineTo(...b); g.lineTo(px, py + apexWidth); g.closePath(); g.fill();
     };
     g.save(); g.globalCompositeOperation = 'screen';
-    drawBeam(58, 18, .045, 28);
-    drawBeam(28, 10, .060, 14);
-    drawBeam(8, 5, .052, 5);
+    drawBeam(58, 18, .026, 30);
+    drawBeam(28, 10, .034, 16);
+    drawBeam(8, 5, .026, 7);
+
     const sourceGlow = g.createRadialGradient(px, py, 0, px, py, 42);
-    sourceGlow.addColorStop(0, `rgba(255,250,235,${.09 * lit})`); sourceGlow.addColorStop(1, 'rgba(255,250,235,0)');
-    g.filter = 'blur(8px)'; g.fillStyle = sourceGlow; g.fillRect(px - 52, py - 52, 104, 104);
+    sourceGlow.addColorStop(0, `rgba(255,250,235,${.05 * lit})`); sourceGlow.addColorStop(1, 'rgba(255,250,235,0)');
+    g.filter = 'blur(10px)'; g.fillStyle = sourceGlow; g.fillRect(px - 52, py - 52, 104, 104);
     g.restore();
     shot.style.opacity = on;
   })(0);
