@@ -1039,6 +1039,11 @@ void main(){
     }[location.hash];
     if (mode) showPanel(mode);
   };
+  const demoSignupUrl = `${location.origin}/#demo-signup`;
+  const demoSignupQr = document.getElementById('demoSignupQr');
+  const demoSignupQrLink = document.getElementById('demoSignupQrLink');
+  demoSignupQrLink.href = demoSignupUrl;
+  demoSignupQr.src = `https://quickchart.io/qr?text=${encodeURIComponent(demoSignupUrl)}&size=220&margin=2&dark=ffffff&light=00000000&v=3`;
   addEventListener('hashchange', showPanelFromHash);
   showPanelFromHash();
   addEventListener('click', () => set(null, false));
