@@ -1,5 +1,9 @@
 # CCNYC homepage
 
+The site uses Next.js App Router. Route files live in `src/app`, readable UI
+sections live in `src/components`, and the specialized canvas/WebGL renderers
+are isolated in `src/lib` and `public/scripts`.
+
 ## Local development
 
 ```sh
@@ -25,16 +29,19 @@ someone signs up for that date.
 2. In the sheet, open **Extensions → Apps Script**.
 3. Replace the editor contents with
    `google-apps-script/presentation-signup.gs` from this repository and save.
-4. Select **Deploy → New deployment → Web app**.
-5. Set **Execute as** to **Me** and **Who has access** to **Anyone**, then deploy.
-6. Copy the web app URL ending in `/exec`.
-7. Add it to the production environment and local `.env` as:
+4. Open **Project Settings → Script Properties**, add a property named
+   `DEMO_SIGNUP_PASSWORD`, and set its value to the password shared at the
+   meetup (for example, `ccnyc2026`).
+5. Select **Deploy → New deployment → Web app**.
+6. Set **Execute as** to **Me** and **Who has access** to **Anyone**, then deploy.
+7. Copy the web app URL ending in `/exec`.
+8. Add it to the production environment and local `.env` as:
 
    ```env
-   PUBLIC_PRESENTATION_SIGNUP_URL=https://script.google.com/macros/s/DEPLOYMENT_ID/exec
+   NEXT_PUBLIC_PRESENTATION_SIGNUP_URL=https://script.google.com/macros/s/DEPLOYMENT_ID/exec
    ```
 
-8. Rebuild and deploy the website.
+9. Rebuild and deploy the website.
 
 When the Apps Script changes later, create a new deployment version from
 **Deploy → Manage deployments** so the live endpoint receives the update.
@@ -44,5 +51,5 @@ When the Apps Script changes later, create a new deployment version from
 | Command | Action |
 | :-- | :-- |
 | `npm run dev` | Start the local development server |
-| `npm run build` | Build the static production site in `dist/` |
-| `npm run preview` | Preview the production build locally |
+| `npm run build` | Create an optimized Next.js production build |
+| `npm run start` | Run the production build locally |

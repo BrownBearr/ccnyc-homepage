@@ -12,6 +12,19 @@ function doPost(event) {
     return jsonResponse_({ ok: false, error: "Unknown action." });
   }
 
+  if (!isTuesday_()) {
+    return jsonResponse_({ ok: false, error: "Demo signup is only available on Tuesdays." });
+  }
+
+  const expectedPassword = PropertiesService.getScriptProperties().getProperty("DEMO_SIGNUP_PASSWORD");
+  if (!expectedPassword) {
+    return jsonResponse_({ ok: false, error: "Demo signup password is not configured." });
+  }
+  const password = String(event.parameter.password || "");
+  if (password !== expectedPassword) {
+    return jsonResponse_({ ok: false, error: "Incorrect demo signup password." });
+  }
+
   const name = String(event.parameter.name || "").trim();
   const instagram = String(event.parameter.instagram || "").trim().replace(/^@/, "");
   if (!name) return jsonResponse_({ ok: false, error: "Please enter your name." });
@@ -80,6 +93,12 @@ function currentMeetingTuesdayKey_() {
   const daysSinceTuesday = (date.getUTCDay() - 2 + 7) % 7;
   date.setUTCDate(date.getUTCDate() - daysSinceTuesday);
   return Utilities.formatDate(date, "UTC", "yyyy-MM-dd");
+}
+
+function isTuesday_() {
+  const localDate = Utilities.formatDate(new Date(), TIME_ZONE, "yyyy-MM-dd");
+  const parts = localDate.split("-").map(Number);
+  return new Date(Date.UTC(parts[0], parts[1] - 1, parts[2])).getUTCDay() === 2;
 }
 
 function jsonResponse_(data) {

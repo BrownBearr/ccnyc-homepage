@@ -1,236 +1,3 @@
----
-const signupEndpoint =
-  import.meta.env.PUBLIC_PRESENTATION_SIGNUP_URL ??
-  "https://script.google.com/macros/s/AKfycbx2eBlA1Xt_zF3w4r2FzZJ6faH5f0d7MnpYE4PPH64zThko_eYMhH7VGPkAXZokMeO1/exec";
----
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#191919;color:#fff}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>CCNYC — Creative Coding NYC</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Karla:wght@400;500;600&family=Cormorant+Garamond:ital@1&family=Red+Hat+Mono:wght@400;500&display=swap">
-<style is:global>
-@font-face{font-family:Tanker;src:url("/fonts/Tanker-Regular.otf") format("opentype");font-display:swap}
-@font-face{font-family:Karla;src:url("/fonts/Karla-VariableFont_wght.ttf") format("truetype");font-display:swap}
-html,body{margin:0;height:100%;background:#191919;overflow:hidden;display:grid;place-items:center}
-canvas{display:block;position:fixed;inset:0;z-index:3;pointer-events:none}
-/* the meetup info, revealed under the wordmark when the animation ends */
-:root{color-scheme:dark;--bg:#191919;--ink:#E7E5DE;--muted:#8c8984;--rule:#2a2925;--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
-/* After the animation: one wide canvas, a screen tall, that pans left and right.
-   Photos of different sizes are scattered across it with the meetup info in among them.
-   Positions are in vh so the whole canvas keeps its proportions at any window size. */
-#board{position:fixed;inset:0;z-index:2;overflow:hidden;color:var(--ink);font:13px/1.6 var(--mono);
-  scrollbar-width:none}
-#board::-webkit-scrollbar{display:none}
-#board.dragging{cursor:grabbing;user-select:none}
-.board{position:relative;width:440vh;height:100%}
-.board > *{position:absolute}
-.blk{opacity:0;transform:translateY(10px);transition:opacity .8s ease .5s,transform .8s ease .5s;cursor:auto}
-#board.on .blk{opacity:1;transform:none}
-.ph{margin:0;opacity:0;transform-origin:0 0}
-.ph.out{opacity:1}
-.ph .frame{aspect-ratio:var(--ar);overflow:hidden;background:#232320}
-.ph img{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.85) brightness(.92);-webkit-user-drag:none;pointer-events:none}
-.ph figcaption{margin-top:8px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);opacity:0;transition:opacity .6s ease .9s}
-#board.on .ph figcaption{opacity:1}
-.ph.landed{transform:rotate(var(--r,0deg))}
-/* one screen: intro and links, the Pier 57 sketch, the next meetups and the signup code,
-   side by side without overlapping; centred on wide screens, panning on narrow ones */
-.board{--u:max(1vh,7.2px);width:100%}
-.col{display:flex;flex-direction:column;gap:5vh}
-.col > *{position:static}
-/* links up beside the wordmark on the left, the signup code on the right */
-.b-links{left:calc(max(0px, (100% - 132 * var(--u)) / 2) + 94 * var(--u));top:33vh;width:calc(34 * var(--u))}
-.b-links .links{flex-direction:column;align-items:flex-start;gap:12px}
-.b-qr{display:none}   /* the signup QR code, hidden for now */
-.b-qr a{display:block;width:16vh;height:16vh}
-.qr{display:block;width:100%;height:100%}
-/* below: the intro behind a thin rule, the pier, the meetups */
-/* the intro, centred under the wordmark */
-/* the meetups, bottom right */
-/* the intro and, under it, the meetups: on the left, over the river beside the buildings */
-.col-a{left:4vh;bottom:5vh;width:min(50vh,36vw);z-index:5}   /* the intro, bottom left */
-.b-pier{display:none}   /* the Pier 57 sketch, hidden for now */
-#pier{display:block;position:static;width:100%;height:42vh;z-index:auto;pointer-events:none}
-.pier-cap{margin:6px 0 0;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
-.pier-at{margin:2px 0 0;font-size:11px;color:var(--muted)}
-.b-meet ol li.later{display:none}
-.b-meet.all ol li.later{display:grid}
-.b-meet.all ol li.year.later{display:block}
-.b-meet.all ol{max-height:34vh;overflow:auto;scrollbar-width:thin;padding-right:8px}
-.b-meet.all{background:rgba(25,25,25,.92);box-shadow:0 0 0 14px rgba(25,25,25,.92)}
-.see-all{margin-top:12px;font:inherit;color:var(--ink);background:none;border:0;padding:0;cursor:pointer}
-.see-all::before{content:"<";color:var(--muted);padding-right:.15em;display:inline-block;transition:transform .3s cubic-bezier(.2,.7,.2,1)}
-.see-all::after{content:"/>";color:var(--muted);padding-left:.6em;display:inline-block;transition:transform .3s cubic-bezier(.2,.7,.2,1)}
-.see-all:hover::before{transform:translateX(-4px)}.see-all:hover::after{transform:translateX(4px)}
-.see-all:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
-/* tall phone screens: text and the next dates first, the code and sketch to the right */
-@media (max-aspect-ratio:4/5){
-  .board{width:100%}
-  .col{gap:4vh}
-  .col-a{left:2.5vh;right:auto;top:auto;bottom:4vh;width:56vw;text-align:left}
-  .nextup{display:none}
-  .b-links{left:2.5vh;top:75vh;width:42vh}
-  .b-links .links{flex-direction:row}
-  .b-qr a{width:14vh;height:14vh}
-  .b-pier{left:52vh;top:42vh;width:44vh}
-  #pier{height:36vh}
-}
-#map{z-index:0;width:100%;height:100%}
-/* top left: MENU, then Instagram and Discord; the menu opens the links */
-.topbar{position:fixed;left:4vh;top:3.5vh;z-index:6;display:flex;align-items:flex-start;gap:18px;color:var(--ink);font:13px/1.6 var(--mono);
-  opacity:0;transition:opacity .8s ease .5s;pointer-events:none}
-.topbar.on{opacity:1;pointer-events:auto}
-.menu-btn{text-decoration:none;font:400 14px/1 var(--mono);letter-spacing:.04em;color:var(--ink);background:none;border:0;padding:4px 0;cursor:pointer}
-.menu-btn .sl{color:var(--muted);margin-right:.5em;display:inline-block;transition:transform .3s cubic-bezier(.2,.7,.2,1)}
-.menu-btn:hover .sl,.menu-btn[aria-expanded="true"] .sl{transform:translateX(-4px);color:var(--ink)}
-/* Instagram and Discord sit in the top right corner */
-.topbar .icon{position:fixed;top:3.5vh;right:calc(4vh + 40px)}
-.topbar .icon + .icon{right:4vh}
-.menu-btn:focus-visible,.topbar .icon:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
-.topbar .icon{display:block;width:26px;height:26px;margin-top:2px;color:#fff;transition:color .2s}
-.topbar .icon:hover{color:var(--ink)}
-.topbar .icon svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6}
-.topbar .icon svg .dot,.topbar .icon svg .fill{fill:currentColor;stroke:none}
-.menu-panel{position:absolute;left:0;top:34px;padding:18px 22px;background:rgba(25,25,25,.985);box-sizing:border-box;box-shadow:0 0 0 1px var(--rule);min-width:260px}
-@media (max-aspect-ratio:4/5){.topbar{left:2.5vh;top:2.5vh}.topbar .icon{top:2.5vh;right:calc(2.5vh + 40px)}.topbar .icon + .icon{right:2.5vh}}
-.topbar{gap:28px}
-.nextup{color:var(--muted);font-size:12px;letter-spacing:.04em;padding-top:5px}
-.meet-panel{left:auto;width:min(460px,calc(100vw - 5vh));max-height:70vh;overflow:auto;scrollbar-width:thin}
-#meetBtn{position:relative}
-.menu-panel .links{flex-direction:column;align-items:flex-start;gap:12px}
-/* the picture Pier 57 projects, bottom left */
-.shot{opacity:0;transition:none!important;margin:0;width:100%;aspect-ratio:4/3;position:relative;overflow:hidden;background:transparent;box-shadow:0 0 30px rgba(255,244,210,.10);animation:projector-drift 16s ease-in-out infinite}
-@keyframes projector-drift{0%,100%{transform:translate3d(0,0,0) rotate(0)}25%{transform:translate3d(4vw,-6vh,0) rotate(-.3deg)}55%{transform:translate3d(7vw,-15vh,0) rotate(.3deg)}78%{transform:translate3d(2vw,-10vh,0) rotate(-.18deg)}}
-.shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.9) contrast(.9) brightness(.94);opacity:0;transition:opacity .9s ease}
-.shot img.on{opacity:.60}
-.shot-info{position:absolute;inset:0;z-index:1;box-sizing:border-box;padding:18px 20px;overflow:auto;scrollbar-width:thin;background:transparent;color:var(--ink);font:11px/1.45 var(--mono);opacity:0;pointer-events:none;transition:opacity .35s ease}
-.shot-info p{margin:0 0 12px}.shot-info ul{margin:0;padding-left:18px}.shot-info li{margin:0 0 5px}.shot-info-title{font-weight:500;text-transform:uppercase;letter-spacing:.08em}
-.about-panel{font-family:"Red Hat Mono",monospace;font-size:16px;line-height:1.55;letter-spacing:-.015em;caret-color:var(--ink);cursor:text}.about-panel:focus{outline:1px solid rgba(231,229,222,.28);outline-offset:-1px}.about-panel ul{padding-left:18px;list-style:disc}.about-gatherings-title{margin-top:20px;font-family:"Karla",sans-serif;font-size:19px;font-weight:500;font-style:italic;letter-spacing:-.01em}
-.shot-panel-link{display:inline-block;margin-top:10px;padding:8px 10px;border:1px solid currentColor;color:var(--ink);text-decoration:none;text-transform:uppercase;letter-spacing:.06em}
-.shot-panel-link:hover{background:var(--ink);color:#191919}
-.agenda-panel{font-size:14px;line-height:1.5}.agenda-panel>.shot-info-title{font-size:16px}.agenda-mini{display:grid;gap:14px;margin:8px 0 18px}.agenda-mini div{display:grid;grid-template-columns:7.5em 1fr;gap:12px}.agenda-mini time{color:var(--muted)}.agenda-mini strong{font-weight:500}.agenda-mini span{display:block;color:var(--muted)}
-.signup-panel{font-size:14px;line-height:1.5}.signup-panel .shot-info-title{font-size:18px}
-.calendar-panel{font-family:"Red Hat Mono",monospace;font-size:12px;line-height:1.4}.calendar-panel .calendar-title{margin:0 0 18px;font:500 italic 22px/1.15 "Karla",sans-serif}.calendar-table{width:100%;border-collapse:collapse}.calendar-table th,.calendar-table td{padding:8px 10px 8px 0;border-bottom:1px solid rgba(231,229,222,.18);text-align:left;vertical-align:top}.calendar-table th{font-family:"Karla",sans-serif;font-size:13px;font-weight:500}.calendar-table th:first-child,.calendar-table td:first-child{white-space:nowrap}.calendar-panel a{display:inline-block;margin-top:20px;color:var(--ink);text-underline-offset:4px}
-.signup-projector-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:10px}.signup-projector-status{color:var(--muted)}
-.projector-signup-form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:7px;margin:10px 0 14px}.projector-signup-form input,.projector-signup-form button{min-width:0;box-sizing:border-box;border:1px solid rgba(231,229,222,.35);border-radius:0;background:rgba(25,25,25,.45);color:var(--ink);font:12px/1.2 var(--mono);padding:8px}.projector-signup-form input::placeholder{color:var(--muted)}.projector-signup-form button{cursor:pointer;text-transform:uppercase}.projector-signup-form button:hover{background:var(--ink);color:#191919}.projector-signup-form :disabled{opacity:.45;cursor:not-allowed}
-.agenda-signup-qr{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:20px;padding-top:14px;border-top:1px solid rgba(231,229,222,.2);font-size:15px;line-height:1.2;text-align:center;text-transform:uppercase;letter-spacing:.06em}.shot.agenda .agenda-signup-qr img{position:static!important;width:140px!important;height:140px!important;object-fit:contain!important;filter:none!important;opacity:1!important;flex:0 0 auto}
-.projector-lineup{margin:8px 0 0;padding:0;list-style:none;display:grid;gap:3px}.projector-lineup li{display:grid;grid-template-columns:2em minmax(0,1fr) auto;gap:8px;align-items:baseline;margin:0}.projector-lineup .position{color:var(--muted)}.projector-lineup .available{color:var(--muted)}.projector-lineup a{color:var(--ink);text-decoration:none;text-align:right}
-.shot.about,.shot.agenda,.shot.signup,.shot.calendar{aspect-ratio:auto;height:min(60vh,520px);background:transparent;box-shadow:none;animation:none}
-.shot.about img,.shot.agenda img,.shot.signup img,.shot.calendar img{opacity:0!important}
-.shot.about img.on,.shot.agenda img.on,.shot.signup img.on,.shot.calendar img.on{opacity:.24!important;filter:saturate(.65) brightness(.62) contrast(.82)}
-.shot.about .about-panel,.shot.agenda .agenda-panel,.shot.signup .signup-panel,.shot.calendar .calendar-panel{opacity:1;pointer-events:auto}
-.shot.about::before,.shot.about::after,.shot.agenda::before,.shot.agenda::after,.shot.signup::before,.shot.signup::after,.shot.calendar::before,.shot.calendar::after{display:none}
-.col-a.info-open{width:min(62vh,44vw)}
-.shot::before{content:"";position:absolute;inset:0;z-index:1;background-image:radial-gradient(rgba(255,255,255,.13) .45px,transparent .65px);background-size:3px 3px;mix-blend-mode:screen;opacity:.18;pointer-events:none}
-.shot::after{content:"";position:absolute;inset:0;z-index:2;background:radial-gradient(ellipse at 52% 48%,rgba(255,248,220,.08) 0 38%,rgba(30,24,16,.14) 75%,rgba(10,8,5,.30) 100%);box-shadow:inset 0 0 22px rgba(255,244,210,.08);pointer-events:none}
-#beam{position:fixed;inset:0;z-index:1;pointer-events:none;width:100%;height:100%}
-.pier-pin{position:fixed;z-index:5;width:22px;height:28px;padding:0;border:0;background:transparent;color:var(--ink);opacity:0;pointer-events:none;transform:translate(-50%,-20px);transition:opacity .35s ease;cursor:help}
-.pier-pin.on{opacity:1;pointer-events:auto}
-.pier-pin::before{content:"";position:absolute;left:4px;top:3px;width:14px;height:14px;border-radius:50% 50% 50% 0;background:#fff;transform:rotate(-45deg)}
-.pier-pin::after{content:"";position:absolute;left:9px;top:8px;width:4px;height:4px;border-radius:50%;background:#191919}
-.pier-tip{position:absolute;left:50%;bottom:34px;width:max-content;max-width:min(250px,70vw);padding:7px 9px;background:rgba(25,25,25,.96);box-shadow:0 0 0 1px var(--rule);color:var(--ink);font:11px/1.4 var(--mono);letter-spacing:.02em;text-align:left;opacity:0;transform:translate(-50%,5px);transition:opacity .2s ease,transform .2s ease;pointer-events:none}
-.pier-pin:hover .pier-tip,.pier-pin:focus-visible .pier-tip{opacity:1;transform:translate(-50%,0)}
-.pier-pin:focus-visible{outline:none}
-@media (max-width:768px){
-  .topbar{left:2.5vh;right:2.5vh;top:calc(2.5vh + env(safe-area-inset-top,0px));gap:20px;align-items:center}
-  .topbar>#calendarNavBtn{display:none}
-  .topbar>#menuBtn{display:block;width:42px;height:42px;min-height:42px;padding:0;font-size:0;background:linear-gradient(currentColor,currentColor) center calc(50% - 7px)/26px 2px no-repeat,linear-gradient(currentColor,currentColor) center/26px 2px no-repeat,linear-gradient(currentColor,currentColor) center calc(50% + 7px)/26px 2px no-repeat}
-  .menu-panel{position:fixed;left:2.5vh!important;top:calc(2.5vh + env(safe-area-inset-top,0px) + 48px);width:calc(100vw - 5vh);min-width:0;max-height:calc(100dvh - 90px);overflow:auto;padding:20px 22px}
-  .menu-panel .links{gap:17px}.menu-panel .links a{display:block;font-size:15px;line-height:1.35}
-  .ph{display:none!important}
-  .col-a{display:flex!important;left:50%;right:auto;top:17vh;bottom:auto;width:56vw;transform:translateX(-50%)}
-  .col-a.info-open{top:20vh;width:86vw}
-  .shot{animation:projector-drift-mobile 10s ease-in-out infinite}
-  .shot.about,.shot.agenda,.shot.signup,.shot.calendar{animation:none}
-  @keyframes projector-drift-mobile{0%,100%{transform:translate3d(0,0,0)}35%{transform:translate3d(-3vw,-.5vh,0)}70%{transform:translate3d(3vw,.5vh,0)}}
-  .shot.about,.shot.agenda,.shot.signup,.shot.calendar{height:min(58vh,490px)}
-  .shot{display:block!important}
-  #beam{display:block!important}
-}
-@media (min-width:769px){.col-a{bottom:20vh}}
-.hint{position:fixed;right:20px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:4;margin:0;color:var(--muted);
-  font:11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;opacity:0;transition:opacity .6s ease;pointer-events:none}
-.hint.on{opacity:1}
-/* the name, spelled out under the wordmark */
-.sub{position:fixed;left:0;right:0;top:var(--sub,30vh);z-index:4;margin:0;text-align:center;color:var(--ink);pointer-events:none;
-  font:italic 400 17px/1 Karla,system-ui,sans-serif;letter-spacing:.01em;opacity:0;transition:opacity .8s ease .3s}
-.sub.on{opacity:1}
-@media (prefers-reduced-motion:reduce){.blk,.ph figcaption,.hint{transition:none}.shot{animation:none}}
-.about{display:grid;gap:14px}
-.lede{margin:0;color:var(--ink);text-wrap:pretty}
-.space{margin:0 auto;padding:0;list-style:none;display:grid;gap:2px;color:var(--ink)}
-
-.space li{text-align:center}
-.links{display:flex;flex-wrap:wrap;gap:10px 22px;margin:0;padding:0;list-style:none}
-.links a{color:var(--ink);text-decoration:none}
-/* written as code tags: <Discord /> */
-.links a::before,.links a::after{display:inline-block;color:var(--muted);transition:transform .3s cubic-bezier(.2,.7,.2,1),color .2s}
-.links a::before{content:"<";padding-right:.15em}
-.links a::after{content:"/>";padding-left:.6em}
-.links a:hover::before,.links a:focus-visible::before{transform:translateX(-4px);color:var(--ink)}
-.links a:hover::after,.links a:focus-visible::after{transform:translateX(4px);color:var(--ink)}
-.links a:hover{color:#fff}
-.mail{margin:10px 0 0;color:var(--muted);font-size:12px}
-.mail #addr{color:var(--ink);user-select:all}
-.mail button{font:inherit;color:var(--muted);background:none;border:0;padding:0 0 0 .6em;cursor:pointer}
-.mail button:hover{color:var(--ink)}
-.mail button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
-/* hover: the label opens up into small blocks that spread from the centre, a light
-   echo of the loader's split; every letter stays whole so it stays readable */
-.links a{display:inline-block;white-space:nowrap}
-.links a .b{display:inline-block;transition:transform .3s cubic-bezier(.2,.7,.2,1)}
-.links a:hover .b,.links a:focus-visible .b{transform:translateX(calc(var(--o) * 1.4px))}
-@media (prefers-reduced-motion:reduce){.links a .b{transition:none}}
-.links a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
-h2{font:400 15px/1 Tanker,Impact,sans-serif;letter-spacing:.06em;margin:0 0 10px;color:var(--ink)}
-.when{margin:0 0 8px;color:var(--muted);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
-ol{margin:0;padding:0;list-style:none}
-ol li{display:grid;grid-template-columns:7.5em 1fr;gap:16px;padding:4px 0;font-variant-numeric:tabular-nums}
-ol li time{color:var(--ink)}
-ol li span{color:var(--muted);min-width:0}
-ol li.next span{color:var(--ink)}
-ol li.next span::before{content:"Next · ";color:var(--muted)}
-.more{margin:10px 0 0;color:var(--muted);font-size:12px}
-.year{grid-column:1/-1;color:var(--muted);font-size:12px;letter-spacing:.08em;padding-top:14px}
-@media (max-width:480px){ol li{grid-template-columns:6.5em 1fr;gap:10px}}
-</style>
-<section id="board" aria-label="About Creative Coding NYC">
-  <div class="board">
-    <div class="col col-a">
-    <figure class="blk shot" id="shot" aria-label="Photos from Creative Coding NYC meetups"><img alt="" id="shotA"><img alt="" id="shotB"><div class="shot-info about-panel" id="shotInfo" aria-hidden="true" contenteditable="true" role="textbox" aria-multiline="true" spellcheck="true"><p>Creative Coding NYC is a weekly community meetup for anyone interested in bringing their creative ideas to life using code. Everyone is welcome! People from all backgrounds come to our meetups, from non-technical artists to veteran programmers. Our top priority at CCNYC is to foster an inclusive, welcoming environment where members can support and learn from one another.</p><p class="about-gatherings-title">Our gatherings are a space to:</p><ul><li>Work on individual projects or collaborate with others</li><li>Get creative or technical feedback</li><li>Have discussions on creative coding</li><li>Share resources, other artists' work, ideas, etc.</li><li>Learn independently or with others</li><li>Build relationships with others in the creative coding community :)</li></ul></div><div class="shot-info agenda-panel" id="shotAgenda" aria-hidden="true"><p class="shot-info-title">Tuesday meeting agenda · 6–8 PM</p><div class="agenda-mini"><div><time>6:00–7:20</time><p><strong>Chill, code, collaborate</strong></p></div><div><time>7:20–7:30</time><p><strong>Announcements</strong></p></div><div><time>7:30–8:00</time><p><strong>Demos</strong></p></div></div><div class="agenda-signup-qr"><span>Scan to sign up for demos</span><img src="https://quickchart.io/qr?text=https%3A%2F%2Fccnyc.space%2Fmeeting-agenda&size=220&margin=2&dark=ffffff&light=00000000" width="76" height="76" alt="QR code for demo signup"></div></div><div class="shot-info signup-panel" id="shotSignup" aria-hidden="true" data-signup-endpoint={signupEndpoint}><div class="signup-projector-head"><div><p class="shot-info-title">Demo signup</p><p class="signup-projector-status" id="projectorSignupStatus">Loading lineup…</p></div></div><ol class="projector-lineup" id="projectorLineup" aria-label="Demo signup lineup"></ol></div></figure>
-
-
-    </div>
-    <div class="blk b-pier"><canvas id="pier" aria-label="Sketch of Pier 57 on the Hudson River"></canvas>
-      <p class="pier-cap">Pier 57 · Hudson River Park</p><p class="pier-at">40.743° N · 74.010° W · 25 11th Ave</p></div>
-
-    <div class="blk b-qr"><a href="https://ccnyc.space/meeting-agenda" target="_blank" rel="noopener"><svg role="img" aria-label="QR code for the meeting agenda and demo signup" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29 29" class="qr"><path class="qrline" stroke="#fff" d="M0 0.5h7m2 0h2m1 0h1m1 0h1m3 0h2m2 0h7m-29 1h1m5 0h1m3 0h1m1 0h1m3 0h3m1 0h1m1 0h1m5 0h1m-29 1h1m1 0h3m1 0h1m3 0h1m3 0h2m1 0h1m2 0h1m1 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m2 0h1m3 0h1m4 0h2m2 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m2 0h1m2 0h1m9 0h1m1 0h3m1 0h1m-29 1h1m5 0h1m1 0h2m2 0h1m2 0h1m2 0h2m2 0h1m5 0h1m-29 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-17 1h2m1 0h3m2 0h1m-21 1h1m2 0h1m1 0h2m1 0h1m1 0h3m1 0h1m1 0h1m2 0h1m1 0h1m1 0h1m-22 1h2m3 0h4m2 0h1m1 0h1m4 0h3m2 0h1m2 0h1m-28 1h1m1 0h2m1 0h1m1 0h3m1 0h3m1 0h1m1 0h2m3 0h5m-25 1h3m2 0h1m2 0h1m1 0h1m1 0h1m2 0h1m3 0h1m1 0h1m1 0h2m-27 1h3m1 0h3m4 0h1m1 0h1m1 0h2m1 0h2m1 0h2m1 0h1m1 0h2m-27 1h1m1 0h2m1 0h2m3 0h3m4 0h1m1 0h1m-21 1h3m1 0h3m3 0h1m1 0h2m1 0h1m3 0h2m1 0h1m1 0h4m-29 1h6m3 0h1m2 0h1m2 0h3m1 0h4m1 0h2m1 0h1m-27 1h1m1 0h1m1 0h4m1 0h1m2 0h1m3 0h1m1 0h3m5 0h1m-27 1h3m5 0h2m1 0h3m1 0h1m5 0h2m1 0h1m2 0h1m-29 1h1m2 0h1m2 0h1m1 0h5m1 0h1m1 0h2m4 0h2m3 0h2m-27 1h4m1 0h1m2 0h2m2 0h1m2 0h3m3 0h1m3 0h2m-29 1h1m2 0h1m2 0h1m3 0h1m1 0h1m2 0h2m1 0h1m1 0h5m1 0h1m-19 1h1m1 0h1m1 0h1m1 0h1m1 0h1m2 0h2m3 0h1m1 0h3m-29 1h7m5 0h1m3 0h1m3 0h1m1 0h1m1 0h1m2 0h1m-28 1h1m5 0h1m1 0h2m1 0h2m1 0h3m1 0h1m1 0h1m3 0h5m-29 1h1m1 0h3m1 0h1m2 0h3m4 0h2m2 0h5m3 0h1m-29 1h1m1 0h3m1 0h1m1 0h1m1 0h4m3 0h1m1 0h1m2 0h6m-28 1h1m1 0h3m1 0h1m2 0h2m3 0h1m2 0h2m2 0h1m2 0h3m1 0h1m-29 1h1m5 0h1m3 0h1m5 0h6m2 0h1m2 0h1m-28 1h7m1 0h3m1 0h2m3 0h1m2 0h1m3 0h2m1 0h1"/></svg></a></div>
-
-
-  </div>
-</section>
-<header class="topbar" id="topbar">
-  <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="menuPanel">menu</button>
-  <a class="menu-btn" href="#calendar" id="calendarNavBtn">calendar</a>
-
-  <a class="icon" href="https://www.instagram.com/creativecodingnyc/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1" class="dot"/></svg></a>
-  <a class="icon linkedin" href="https://www.linkedin.com/company/143076054/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle class="fill" cx="6.5" cy="6.5" r="1.7"/><rect class="fill" x="5" y="10" width="3" height="9" rx=".35"/><path class="fill" d="M10.5 10h3v1.3c.9-1.15 2-1.7 3.45-1.7 3 0 3.55 1.95 3.55 4.55V19h-3.2v-4.35c0-1.05-.02-2.4-1.55-2.4-1.55 0-1.8 1.2-1.8 2.35V19h-3.45Z"/></svg></a>
-  <nav class="menu-panel" id="menuPanel" hidden aria-label="Menu"><ul class="links">
-      <li><a href="#about" id="infoBtn" aria-label="About Creative Coding NYC"><span class="b" style="--o:-1.0">Abo</span><span class="b" style="--o:0">ut</span></a></li>
-      <li><a href="#agenda" id="agendaBtn" aria-label="Meeting agenda"><span class="b" style="--o:-2">Mee</span><span class="b" style="--o:-1">tin</span><span class="b" style="--o:0">g</span><span class="b" style="--o:1">&nbsp;age</span><span class="b" style="--o:2">nda</span></a></li>
-      <li><a href="#demo-signup" id="signupBtn" aria-label="Demo signup"><span class="b" style="--o:-1">Dem</span><span class="b" style="--o:0">o&nbsp;</span><span class="b" style="--o:1">signup</span></a></li>
-      <li><a href="https://discord.gg/qbr6XNVsFU" target="_blank" rel="noopener" aria-label="Discord"><span class="b" style="--o:-1.0">Dis</span><span class="b" style="--o:0.0">cor</span><span class="b" style="--o:1.0">d</span></a></li>
-      <li><a href="https://www.instagram.com/creativecodingnyc/" target="_blank" rel="noopener" aria-label="Instagram"><span class="b" style="--o:-1.0">Ins</span><span class="b" style="--o:0.0">tag</span><span class="b" style="--o:1.0">ram</span></a></li>
-      <li><a href="#calendar" id="calendarBtn" aria-label="Calendar"><span class="b" style="--o:-1.0">Cal</span><span class="b" style="--o:0.0">end</span><span class="b" style="--o:1.0">ar</span></a></li>
-          <li><a href="mailto:creativecodingnyc@gmail.com" id="contact" aria-label="Contact"><span class="b" style="--o:-1.0">Con</span><span class="b" style="--o:0.0">tac</span><span class="b" style="--o:1.0">t</span></a></li>
-    </ul>
-    <p class="mail" id="mail" hidden><span id="addr">creativecodingnyc@gmail.com</span> <button type="button" id="copy">copy</button></p></nav>
-</header>
-<p class="hint" id="hint" aria-hidden="true" hidden></p>
-<canvas id="beam" aria-hidden="true"></canvas>
-<button class="pier-pin" id="pierPin" type="button" aria-label="Pier 57 meetup location"><span class="pier-tip">We meet at Pier 57 unless otherwise posted.</span></button>
-<p class="sub" id="sub">creative coding nyc</p>
-<script is:inline src="/vendor/p5.min.js"></script>
-<script is:inline>
 // LOADING fills from grey to white, twists over to CCNYC; CCNYC goes through a
 // grid of lenses until one CCNYC is left, which grows near the top. Plays once, ~10s.
 const BG = '#191919', INK = '#E7E5DE', GREY = '#8c8984', WORD = 'LOADING', REVEAL = 'CCNYC';
@@ -1154,9 +921,9 @@ void main(){
   const lineup = document.getElementById('projectorLineup'), signupStatus = document.getElementById('projectorSignupStatus');
   const signupForm = document.createElement('form');
   signupForm.className = 'projector-signup-form';
-  signupForm.innerHTML = '<input name="name" type="text" maxlength="60" autocomplete="name" placeholder="Your name" aria-label="Your name" required><input name="instagram" type="text" maxlength="30" autocomplete="off" placeholder="Instagram (optional)" aria-label="Instagram handle, optional"><button type="submit">Sign up</button>';
+  signupForm.innerHTML = '<input name="name" type="text" maxlength="60" autocomplete="name" placeholder="Your name" aria-label="Your name" required><input name="instagram" type="text" maxlength="30" autocomplete="off" placeholder="Instagram (optional)" aria-label="Instagram handle, optional"><input name="password" type="password" autocomplete="off" placeholder="Demo password" aria-label="Demo signup password" required><button type="submit">Sign up</button>';
   lineup.before(signupForm);
-  const signupName = signupForm.elements.name, signupInstagram = signupForm.elements.instagram, signupSubmit = signupForm.querySelector('button');
+  const signupName = signupForm.elements.name, signupInstagram = signupForm.elements.instagram, signupPassword = signupForm.elements.password, signupSubmit = signupForm.querySelector('button');
   const capacity = 10;
   let signupLoading = false;
 
@@ -1166,6 +933,10 @@ void main(){
     const date = new Date(Date.UTC(part('year'), part('month') - 1, part('day')));
     date.setUTCDate(date.getUTCDate() - (date.getUTCDay() - 2 + 7) % 7);
     return date.toISOString().slice(0, 10);
+  };
+  const isTuesday = () => {
+    const weekday = new Intl.DateTimeFormat('en-US', { timeZone:'America/New_York', weekday:'short' }).format(new Date());
+    return weekday === 'Tue';
   };
   const presentersFrom = data => Array.isArray(data.presenters)
     ? data.presenters
@@ -1193,7 +964,8 @@ void main(){
       lineup.append(item);
     }
     const full = presenters.length >= capacity;
-    signupName.disabled = full; signupInstagram.disabled = full; signupSubmit.disabled = full;
+    const closed = !isTuesday();
+    signupName.disabled = full || closed; signupInstagram.disabled = full || closed; signupPassword.disabled = full || closed; signupSubmit.disabled = full || closed;
   };
   const loadLineup = async () => {
     if (signupLoading) return;
@@ -1209,7 +981,7 @@ void main(){
       const responseDate = data.meetingDate || data.date;
       const presenters = responseDate === requestedDate ? presentersFrom(data).slice(0, capacity) : [];
       renderLineup(presenters);
-      signupStatus.textContent = `${readableDate} · ${presenters.length} / ${capacity} spots`;
+      signupStatus.textContent = isTuesday() ? `${readableDate} · ${presenters.length} / ${capacity} spots` : 'Demo signup opens Tuesday';
     } catch {
       signupStatus.textContent = `${readableDate} · lineup unavailable`;
     } finally {
@@ -1220,11 +992,13 @@ void main(){
     event.preventDefault();
     const name = signupName.value.trim();
     const instagram = signupInstagram.value.trim().replace(/^@/, '');
-    if (!name) return;
-    signupName.disabled = true; signupInstagram.disabled = true; signupSubmit.disabled = true;
+    const password = signupPassword.value;
+    if (!name || !password) return;
+    if (!isTuesday()) { signupStatus.textContent = 'Demo signup is only available on Tuesdays.'; return; }
+    signupName.disabled = true; signupInstagram.disabled = true; signupPassword.disabled = true; signupSubmit.disabled = true;
     signupStatus.textContent = 'Saving your spot…';
     try {
-      const body = new URLSearchParams({ action:'signup', name, instagram });
+      const body = new URLSearchParams({ action:'signup', name, instagram, password });
       const response = await fetch(signup.dataset.signupEndpoint, { method:'POST', body });
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error(data.error || 'Could not save signup');
@@ -1234,7 +1008,7 @@ void main(){
       signupStatus.textContent = `You’re signed up, ${name}! · ${presenters.length} / ${capacity} spots`;
     } catch (error) {
       signupStatus.textContent = error instanceof Error ? error.message : 'Could not save your spot. Please try again.';
-      signupName.disabled = false; signupInstagram.disabled = false; signupSubmit.disabled = false;
+      signupName.disabled = false; signupInstagram.disabled = false; signupPassword.disabled = false; signupSubmit.disabled = false;
     }
   });
   renderLineup([]);
@@ -1330,6 +1104,3 @@ void main(){
     shot.style.opacity = on;
   })(0);
 })();
-</script>
-
-</body></html>
