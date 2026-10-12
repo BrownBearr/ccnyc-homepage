@@ -13,7 +13,7 @@ export default function ProjectionStage({ signupEndpoint }: { signupEndpoint: st
             <div className="shot-info agenda-panel" id="shotAgenda" aria-hidden="true">
               <p className="shot-info-title">Tuesday meeting agenda · 6–8 PM</p>
               <div className="agenda-mini"><div><time>6:00–7:20</time><p><strong>Chill, code, collaborate</strong></p></div><div><time>7:20–7:30</time><p><strong>Announcements</strong></p></div><div><time>7:30–8:00</time><p><strong>Demos</strong></p></div></div>
-              <div className="agenda-signup-qr"><span>Scan to sign up for demos</span><img src="https://quickchart.io/qr?text=https%3A%2F%2Fccnyc.space%2F%23demo-signup&size=220&margin=2&dark=ffffff&light=00000000" width="140" height="140" alt="QR code for the CCNYC demo signup form" /></div>
+              <a className="agenda-signup-qr" href="/#demo-signup"><span>Scan to sign up for demos</span><img src="https://quickchart.io/qr?text=https%3A%2F%2Fccnyc.space%2F%23demo-signup&size=220&margin=2&dark=ffffff&light=00000000&v=2" width="140" height="140" alt="QR code that opens the CCNYC demo signup" /></a>
             </div>
             <div className="shot-info signup-panel" id="shotSignup" aria-hidden="true" data-signup-endpoint={signupEndpoint}>
               <div className="signup-projector-head"><div><p className="shot-info-title">Demo signup</p><p className="signup-projector-status" id="projectorSignupStatus">Loading lineup…</p></div></div>
