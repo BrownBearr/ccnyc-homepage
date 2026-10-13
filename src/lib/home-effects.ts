@@ -1061,8 +1061,9 @@ void main(){
   signupBtn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); showPanel(shot.classList.contains('signup') ? null : 'signup'); });
   calendarBtn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); showPanel(shot.classList.contains('calendar') ? null : 'calendar'); });
   calendarNavBtn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); showPanel(shot.classList.contains('calendar') ? null : 'calendar'); });
-  const showPanelFromHash = () => {
-    const mode = {
+  const showPanelFromLocation = () => {
+    const requestedPanel = new URLSearchParams(location.search).get('panel');
+    const mode = requestedPanel === 'demo-signup' ? 'signup' : {
       '#about': 'about',
       '#agenda': 'agenda',
       '#demo-signup': 'signup',
@@ -1070,13 +1071,13 @@ void main(){
     }[location.hash];
     if (mode) showPanel(mode);
   };
-  const demoSignupUrl = `${location.origin}/#demo-signup`;
+  const demoSignupUrl = new URL('/?panel=demo-signup', location.origin).toString();
   const demoSignupQr = document.getElementById('demoSignupQr');
   const demoSignupQrLink = document.getElementById('demoSignupQrLink');
   demoSignupQrLink.href = demoSignupUrl;
-  demoSignupQr.src = `https://quickchart.io/qr?text=${encodeURIComponent(demoSignupUrl)}&size=220&margin=2&dark=ffffff&light=00000000&v=3`;
-  addEventListener('hashchange', showPanelFromHash);
-  showPanelFromHash();
+  demoSignupQr.src = `https://quickchart.io/qr?text=${encodeURIComponent(demoSignupUrl)}&size=220&margin=2&dark=ffffff&light=00000000&v=4`;
+  addEventListener('hashchange', showPanelFromLocation);
+  showPanelFromLocation();
   addEventListener('click', () => set(null, false));
   addEventListener('keydown', e => { if (e.key === 'Escape') set(null, false); });
   new MutationObserver(() => bar.classList.toggle('on', document.getElementById('board').classList.contains('on')))
