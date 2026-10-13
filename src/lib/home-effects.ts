@@ -1,3 +1,16 @@
+// The visual engine uses p5's global-mode API, which is provided at runtime by
+// the vendored p5 script. The DOM-facing modules are progressively typed as they
+// are separated from this compatibility boundary.
+// @ts-nocheck
+
+let initialized = false;
+
+type HomeEffectsOptions = { webGLSupported: boolean };
+
+export function initializeHomeEffects({ webGLSupported }: HomeEffectsOptions) {
+if (initialized || typeof window === 'undefined') return;
+initialized = true;
+
 // LOADING fills from grey to white, twists over to CCNYC; CCNYC goes through a
 // grid of lenses until one CCNYC is left, which grows near the top. Plays once, ~10s.
 const BG = '#191919', INK = '#E7E5DE', GREY = '#8c8984', WORD = 'LOADING', REVEAL = 'CCNYC';
@@ -135,6 +148,22 @@ varying vec2 vUv;
 void main(){ vUv = aTexCoord; gl_Position = vec4(aPosition.xy * vec2(2, -2) + vec2(-1, 1), 0, 1); }`;
 
 let flown = false, allReveal = false, wordG, wordSh, lensSh, wordFaces = [], font = 'Impact', t = 0, clock = 0;
+
+const activateStaticFallback = () => {
+  if (document.documentElement.classList.contains('webgl-fallback')) return;
+  flown = true;
+  clock = END;
+  document.documentElement.classList.add('webgl-fallback');
+  document.getElementById('map')?.remove();
+  document.querySelector('canvas.p5Canvas')?.remove();
+  document.getElementById('board')?.classList.add('on');
+  document.getElementById('topbar')?.classList.add('on');
+  document.getElementById('sub')?.classList.add('on');
+  document.querySelectorAll<HTMLElement>('.ph').forEach(photo => photo.classList.add('out', 'landed'));
+  const shot = document.getElementById('shot');
+  if (shot) shot.style.opacity = '1';
+};
+addEventListener('home-effects-fallback', activateStaticFallback, { once: true });
 
 const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255);
 const clamp01 = x => Math.min(1, Math.max(0, x));
@@ -512,7 +541,6 @@ function standIn(seed){
   requestAnimationFrame(frame);
 })();
 
-
 // The whole page drifts with the cursor, like one canvas seen through the window:
 // move toward an edge and the canvas slides to show more of that side.
 (() => {
@@ -533,7 +561,6 @@ function standIn(seed){
   })();
 })();
 
-
 // Background: Manhattan around Pier 57, built in 3D from the NYC Digital City Map (its
 // blocks cut into buildings and raised), drawn like an engraving: light lines on dark
 // paper. It tiles in flat, as a map facing you, while the grid of CCNYCs clears, then
@@ -544,7 +571,11 @@ function standIn(seed){
   cv.id = 'map'; cv.setAttribute('aria-hidden', 'true');
   document.body.prepend(cv);
   const gl = cv.getContext('webgl', { antialias: false, premultipliedAlpha: false });
-  if (!gl) { cv.remove(); return; }
+  if (!gl) { cv.remove(); activateStaticFallback(); return; }
+  cv.addEventListener('webglcontextlost', event => {
+    event.preventDefault();
+    activateStaticFallback();
+  }, { once: true });
   const deriv = gl.getExtension('OES_standard_derivatives');
   const T = document.createElement('canvas'), tg = T.getContext('2d');      // where the cursor has wetted the paper
   const PAD = 1.12;                                                         // the picture is a little bigger than the window, for drift
@@ -1075,7 +1106,12 @@ void main(){
     const d = Math.min(2, devicePixelRatio || 1), W = innerWidth, H = innerHeight;
     if (cv.width !== Math.round(W * d) || cv.height !== Math.round(H * d)){ cv.width = Math.round(W * d); cv.height = Math.round(H * d); }
     g.setTransform(d, 0, 0, d, 0, 0); g.clearRect(0, 0, W, H);
-    const P = window.pierPage; if (!P){ shot.style.opacity = 0; pin.classList.remove('on'); return; }
+    const P = window.pierPage;
+    if (!P){
+      shot.style.opacity = document.documentElement.classList.contains('webgl-fallback') ? 1 : 0;
+      pin.classList.remove('on');
+      return;
+    }
     const dr = window.drift || [0, 0], px = P[0] + dr[0] * 0.5, py = P[1] + dr[1] * 0.5;
     pin.style.left = `${px}px`; pin.style.top = `${py}px`;
     pin.classList.toggle('on', clock > 6.2);
@@ -1120,3 +1156,14 @@ void main(){
     shot.style.opacity = on;
   })(0);
 })();
+
+if (webGLSupported) {
+  Object.assign(window, { setup, draw, windowResized });
+  addEventListener('webglcontextlost', event => {
+    event.preventDefault();
+    activateStaticFallback();
+  }, { capture: true, once: true });
+} else {
+  activateStaticFallback();
+}
+}
