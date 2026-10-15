@@ -4,9 +4,6 @@ dist/
 out/
 next-env.d.ts
 
-# generated types
-.astro/
-
 # dependencies
 node_modules/
 

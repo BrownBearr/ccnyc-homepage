@@ -8,7 +8,7 @@ export default function HomeNav() {
   return (
     <header className="topbar" id="topbar">
       <button type="button" className="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="menuPanel">menu</button>
-      <a className="menu-btn" href="#calendar" id="calendarNavBtn">calendar</a>
+      <a className="menu-btn" href="/?panel=calendar" id="calendarNavBtn">calendar</a>
       <a className="icon" href="https://www.instagram.com/creativecodingnyc/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1" className="dot"/></svg>
       </a>
@@ -17,11 +17,11 @@ export default function HomeNav() {
       </a>
       <nav className="menu-panel" id="menuPanel" hidden aria-label="Menu">
         <ul className="links">
-          <li><a href="#about" id="infoBtn">{segments([["Abo", -1], ["ut", 0]])}</a></li>
-          <li><a href="#agenda" id="agendaBtn">{segments([["Mee", -2], ["tin", -1], ["g", 0], ["\u00a0age", 1], ["nda", 2]])}</a></li>
-          <li><a href="#demo-signup" id="signupBtn">{segments([["Dem", -1], ["o\u00a0", 0], ["signup", 1]])}</a></li>
+          <li><a href="/?panel=about" id="infoBtn">{segments([["Abo", -1], ["ut", 0]])}</a></li>
+          <li><a href="/?panel=agenda" id="agendaBtn">{segments([["Mee", -2], ["tin", -1], ["g", 0], ["\u00a0age", 1], ["nda", 2]])}</a></li>
+          <li><a href="/?panel=demo-signup" id="signupBtn">{segments([["Dem", -1], ["o\u00a0", 0], ["signup", 1]])}</a></li>
           <li><a href="https://www.instagram.com/creativecodingnyc/" target="_blank" rel="noopener noreferrer">{segments([["Ins", -1], ["tag", 0], ["ram", 1]])}</a></li>
-          <li><a href="#calendar" id="calendarBtn">{segments([["Cal", -1], ["end", 0], ["ar", 1]])}</a></li>
+          <li><a href="/?panel=calendar" id="calendarBtn">{segments([["Cal", -1], ["end", 0], ["ar", 1]])}</a></li>
           <li><a href="mailto:creativecodingnyc@gmail.com" id="contact">{segments([["Con", -1], ["tac", 0], ["t", 1]])}</a></li>
         </ul>
         <p className="mail" id="mail" hidden><span id="addr">creativecodingnyc@gmail.com</span> <button type="button" id="copy">copy</button></p>

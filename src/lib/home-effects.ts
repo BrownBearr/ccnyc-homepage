@@ -923,7 +923,7 @@ void main(){
   });
   const shot = document.getElementById('shot');
   const calendar = document.createElement('div');
-  calendar.className = 'shot-info calendar-panel'; calendar.id = 'shotCalendar'; calendar.setAttribute('aria-hidden', 'true');
+  calendar.className = 'panel calendar-panel'; calendar.id = 'shotCalendar'; calendar.setAttribute('aria-hidden', 'true');
   calendar.innerHTML = `<p class="calendar-title">Upcoming meetups</p><table class="calendar-table"><thead><tr><th>Date</th><th>What</th><th>Time</th><th>Location</th></tr></thead><tbody>
     <tr><td>10/13/26</td><td>CCNYC meetup</td><td>6–8 PM</td><td>Brooklyn Public Library Central Library, Info Commons lab</td></tr>
     <tr><td>10/20/26</td><td>CCNYC meetup</td><td>6–8 PM</td><td>TBD</td></tr>
@@ -950,10 +950,7 @@ void main(){
   const info = document.getElementById('shotInfo'), agenda = document.getElementById('shotAgenda'), signup = document.getElementById('shotSignup');
   const infoBtn = document.getElementById('infoBtn'), agendaBtn = document.getElementById('agendaBtn'), signupBtn = document.getElementById('signupBtn'), calendarBtn = document.getElementById('calendarBtn'), calendarNavBtn = document.getElementById('calendarNavBtn');
   const lineup = document.getElementById('projectorLineup'), signupStatus = document.getElementById('projectorSignupStatus');
-  const signupForm = document.createElement('form');
-  signupForm.className = 'projector-signup-form';
-  signupForm.innerHTML = '<input name="name" type="text" maxlength="60" autocomplete="name" placeholder="Your name" aria-label="Your name" required><input name="instagram" type="text" maxlength="30" autocomplete="off" placeholder="Instagram (optional)" aria-label="Instagram handle, optional"><input name="password" type="password" autocomplete="off" placeholder="Demo password" aria-label="Demo signup password" required><button type="submit">Sign up</button>';
-  lineup.before(signupForm);
+  const signupForm = document.getElementById('signupForm') as HTMLFormElement;
   const signupName = signupForm.elements.name, signupInstagram = signupForm.elements.instagram, signupPassword = signupForm.elements.password, signupSubmit = signupForm.querySelector('button');
   const capacity = 10;
   let signupLoading = false;
@@ -1043,18 +1040,26 @@ void main(){
     }
   });
   renderLineup([]);
-  const showPanel = mode => {
+  const panelName = mode => mode === 'signup' ? 'demo-signup' : mode;
+  const showPanel = (mode, updateUrl = true) => {
     shot.classList.toggle('about', mode === 'about');
     shot.classList.toggle('agenda', mode === 'agenda');
     shot.classList.toggle('signup', mode === 'signup');
     shot.classList.toggle('calendar', mode === 'calendar');
-    shot.closest('.col-a').classList.toggle('info-open', Boolean(mode));
+    shot.closest('.stage').classList.toggle('info-open', Boolean(mode));
     info.setAttribute('aria-hidden', String(mode !== 'about'));
     agenda.setAttribute('aria-hidden', String(mode !== 'agenda'));
     signup.setAttribute('aria-hidden', String(mode !== 'signup'));
     calendar.setAttribute('aria-hidden', String(mode !== 'calendar'));
     if (mode === 'signup') loadLineup();
     if (mode) set(null, false);
+    if (updateUrl) {
+      const url = new URL(location.href);
+      if (mode) url.searchParams.set('panel', panelName(mode));
+      else url.searchParams.delete('panel');
+      url.hash = '';
+      history.pushState({ panel: panelName(mode) }, '', `${url.pathname}${url.search}`);
+    }
   };
   infoBtn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); showPanel(shot.classList.contains('about') ? null : 'about'); });
   agendaBtn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); showPanel(shot.classList.contains('agenda') ? null : 'agenda'); });
@@ -1063,20 +1068,21 @@ void main(){
   calendarNavBtn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); showPanel(shot.classList.contains('calendar') ? null : 'calendar'); });
   const showPanelFromLocation = () => {
     const requestedPanel = new URLSearchParams(location.search).get('panel');
-    const mode = requestedPanel === 'demo-signup' ? 'signup' : {
+    const mode = ({
+      'about': 'about',
+      'agenda': 'agenda',
+      'demo-signup': 'signup',
+      'calendar': 'calendar'
+    })[requestedPanel] || {
       '#about': 'about',
       '#agenda': 'agenda',
       '#demo-signup': 'signup',
       '#calendar': 'calendar'
     }[location.hash];
-    if (mode) showPanel(mode);
+    showPanel(mode || null, false);
   };
-  const demoSignupUrl = new URL('/?panel=demo-signup', location.origin).toString();
-  const demoSignupQr = document.getElementById('demoSignupQr');
-  const demoSignupQrLink = document.getElementById('demoSignupQrLink');
-  demoSignupQrLink.href = demoSignupUrl;
-  demoSignupQr.src = `https://quickchart.io/qr?text=${encodeURIComponent(demoSignupUrl)}&size=220&margin=2&dark=ffffff&light=00000000&v=4`;
   addEventListener('hashchange', showPanelFromLocation);
+  addEventListener('popstate', showPanelFromLocation);
   showPanelFromLocation();
   addEventListener('click', () => set(null, false));
   addEventListener('keydown', e => { if (e.key === 'Escape') set(null, false); });
