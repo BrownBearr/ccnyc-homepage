@@ -1,0 +1,20 @@
+export type PosterData = {
+  title: string;
+  titleX: number;
+  titleY: number;
+  date: string;
+  dateX: number;
+  dateY: number;
+  time: string;
+  timeX: number;
+  timeY: number;
+  location: string;
+  locationX: number;
+  locationY: number;
+  fontFamily: "tanker" | "karla" | "mono";
+  fontSize: number;
+  alignment: "left" | "center" | "right";
+  fontColor: string;
+  background: string;
+  shader: "none" | "liquid" | "rings" | "scan";
+};

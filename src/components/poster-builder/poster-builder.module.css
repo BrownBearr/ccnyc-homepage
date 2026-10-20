@@ -1,0 +1,552 @@
+.page {
+  min-height: 100vh;
+  padding: 3.5vh 4vh 64px;
+  overflow: hidden;
+  background: #191919;
+  color: #e7e5de;
+}
+
+.header {
+  margin: 0 auto 52px;
+  text-align: center;
+}
+
+.header a {
+  display: inline-block;
+  color: #e7e5de;
+  font: 400 clamp(64px, 9vw, 110px) / 0.7 Tanker, sans-serif;
+  letter-spacing: -0.035em;
+  text-decoration: none;
+}
+
+.workspace {
+  display: grid;
+  position: relative;
+  grid-template-columns: 250px minmax(0, 720px);
+  gap: 0;
+  align-items: start;
+  justify-content: center;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Controls */
+.controls {
+  position: relative;
+  isolation: isolate;
+  z-index: 2;
+  justify-self: start;
+  width: min(250px, 100%);
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 2px;
+  background: rgb(8 10 11 / 38%);
+  box-shadow: none;
+  backdrop-filter: blur(14px) saturate(70%) contrast(108%);
+  -webkit-backdrop-filter: blur(14px) saturate(70%) contrast(108%);
+  color: #fff;
+}
+
+.controls,
+.section,
+.sectionBody {
+  gap: 0;
+}
+
+.panelHeading,
+.section summary,
+.columnHead span:nth-child(n + 3),
+.contentField,
+.field,
+.print {
+  background-color: #73797c;
+  background-image:
+    linear-gradient(rgb(115 121 124 / 78%), rgb(115 121 124 / 78%)),
+    url("/acrylic-panel-texture.png");
+  background-blend-mode: normal;
+  background-position: center, -250px -82px;
+  background-size: auto, 700px 500px;
+  background-repeat: no-repeat;
+  box-shadow: none;
+}
+
+.controls::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: transparent;
+  pointer-events: none;
+}
+
+.controls > * {
+  position: relative;
+  z-index: 2;
+}
+
+.panelHeading {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  margin: 0;
+  padding: 0 12px;
+  border-bottom: 1px solid rgb(255 255 255 / 16%);
+  color: #fff;
+  cursor: pointer;
+  list-style: none;
+}
+
+.panelHeading::-webkit-details-marker {
+  display: none;
+}
+
+.panelHeading span {
+  position: absolute;
+  right: 11px;
+}
+
+.panelHeading span::after {
+  content: "+";
+  font: 500 14px/1 "IBM Plex Mono", monospace;
+}
+
+.controls[open] > .panelHeading span::after {
+  content: "−";
+}
+
+.panelHeading h2 {
+  margin: 0;
+  font: 500 14px/1 "IBM Plex Mono", monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.section {
+  display: block;
+  margin: 0;
+  border: 0;
+}
+
+.section:last-child {
+  border-bottom: 0;
+}
+
+.section summary {
+  position: relative;
+  display: flex;
+  min-height: 33px;
+  align-items: center;
+  padding: 0 30px 0 10px;
+  color: #fff;
+  font: 500 10px/1 "IBM Plex Mono", monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  list-style: none;
+}
+
+.section summary::-webkit-details-marker {
+  display: none;
+}
+
+.section summary::after {
+  content: "+";
+  position: absolute;
+  top: 50%;
+  right: 11px;
+  color: #fff;
+  font-size: 14px;
+  transform: translateY(-50%);
+}
+
+.section[open] summary {
+  border-bottom: 0;
+}
+
+.section[open] summary::after {
+  content: "−";
+}
+
+.sectionBody {
+  color: #fff;
+}
+
+.sectionBody > :last-child {
+  border-bottom: 0;
+}
+
+/* Text and coordinate grid */
+.columnHead,
+.contentField {
+  display: grid;
+  grid-template-columns: 54px minmax(80px, 1fr) 48px 48px;
+}
+
+.columnHead > *,
+.contentField > * {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.columnHead {
+  color: #fff;
+  font: 400 8px/1 "IBM Plex Mono", monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.columnHead span {
+  display: flex;
+  min-height: 27px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  border-right: 1px solid rgb(255 255 255 / 12%);
+  border-bottom: 1px solid rgb(255 255 255 / 12%);
+  text-align: center;
+}
+
+.columnHead span:nth-child(-n + 2) {
+  border: 0;
+  background: transparent;
+}
+
+.columnHead span:last-child {
+  border-right: 0;
+}
+
+.contentField {
+  min-height: 35px;
+  border-bottom: 1px solid rgb(255 255 255 / 12%);
+}
+
+.contentField > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  border-right: 1px solid rgb(255 255 255 / 12%);
+  color: #fff;
+  font: 400 8px/1 "IBM Plex Mono", monospace;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.contentField input {
+  width: 100%;
+  min-width: 0;
+  min-height: 35px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 0;
+  background: transparent;
+  color: #fff;
+  font: 11px/1.2 "IBM Plex Mono", monospace;
+  text-align: center;
+}
+
+.contentField input:first-of-type {
+  text-align: left;
+}
+
+.contentField input:last-child {
+  border-right: 0;
+}
+
+.contentField input[type="number"] {
+  padding-inline: 3px;
+  text-align: center;
+}
+
+.coordinateField {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  border-right: 1px solid rgb(255 255 255 / 12%);
+}
+
+.coordinateField:last-child {
+  border-right: 0;
+}
+
+.coordinateField > span {
+  padding-left: 6px;
+  color: #fff;
+  font: 500 8px/1 "IBM Plex Mono", monospace;
+}
+
+.contentField .coordinateField input {
+  min-width: 0;
+  padding-inline: 2px;
+  border-right: 0;
+}
+
+.contentField input:focus {
+  outline: 1px solid rgb(255 255 255 / 24%);
+  outline-offset: -1px;
+}
+
+/* General settings */
+.field {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  min-height: 35px;
+  align-items: stretch;
+  margin: 0;
+  border-bottom: 1px solid rgb(255 255 255 / 12%);
+}
+
+.field > * {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.field > span {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border-right: 1px solid rgb(255 255 255 / 12%);
+  color: #fff;
+  font: 400 9px/1 "IBM Plex Mono", monospace;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 35px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #fff;
+  font: 11px/1.2 "IBM Plex Mono", monospace;
+  text-align: left;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  outline: 1px solid rgb(255 255 255 / 24%);
+  outline-offset: -1px;
+}
+
+.field input.color {
+  width: 100%;
+  height: 35px;
+  padding: 6px 10px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.print {
+  display: flex;
+  width: 100%;
+  min-height: 35px;
+  align-items: center;
+  margin: 0;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 0;
+  box-sizing: border-box;
+  background: transparent;
+  color: #fff;
+  font: 500 9px/1 "IBM Plex Mono", monospace;
+  text-align: left;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.print:hover {
+  color: #fff;
+}
+
+/* Poster preview */
+.preview {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  justify-content: flex-start;
+}
+
+.poster {
+  --poster-accent: #3157ff;
+  --poster-ink: #f3f0e8;
+
+  position: relative;
+  isolation: isolate;
+  width: min(100%, calc((100vh - 150px) * 0.8), 720px);
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  padding: clamp(28px, 4vw, 52px);
+  background: var(--poster-accent);
+  color: var(--poster-ink);
+}
+
+.poster::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.poster[data-shader="liquid"]::before {
+  background:
+    radial-gradient(circle at 24% 28%, rgb(255 255 255 / 42%), transparent 24%),
+    radial-gradient(circle at 78% 66%, rgb(0 0 0 / 34%), transparent 32%),
+    conic-gradient(from 40deg at 55% 45%, transparent, rgb(255 255 255 / 22%), transparent 42%, rgb(0 0 0 / 20%), transparent);
+  filter: blur(26px);
+  animation: liquid 12s ease-in-out infinite alternate;
+}
+
+.poster[data-shader="rings"]::before {
+  inset: 0;
+  background: repeating-radial-gradient(circle at 50% 54%, transparent 0 22px, currentColor 23px 24px, transparent 25px 42px);
+  opacity: 0.28;
+  transform: scale(1.35);
+}
+
+.poster[data-shader="scan"]::before {
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent 0 8px, currentColor 9px 10px);
+  opacity: 0.22;
+}
+
+.poster h2 {
+  position: absolute;
+  z-index: 1;
+  width: 84%;
+  margin: 0;
+  font-family: var(--poster-font);
+  font-size: clamp(48px, var(--poster-title-size), 160px);
+  font-weight: 400;
+  line-height: 0.72;
+  letter-spacing: -0.025em;
+  text-align: var(--poster-align);
+  text-transform: uppercase;
+  transform: translateX(-50%);
+}
+
+.detail {
+  position: absolute;
+  z-index: 1;
+  width: 84%;
+  margin: 0;
+  font-size: clamp(13px, 1.6vw, 21px);
+  font-weight: 600;
+  line-height: 1.05;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.movable {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.movable:active {
+  cursor: grabbing;
+}
+
+.movable:focus-visible {
+  outline: 1px dashed currentColor;
+  outline-offset: 6px;
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: calc(2.5vh + env(safe-area-inset-top, 0px)) 18px 48px;
+  }
+
+  .header {
+    margin-bottom: 38px;
+  }
+
+  .header a {
+    font-size: clamp(60px, 22vw, 92px);
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .controls {
+    grid-area: auto;
+    width: min(100%, 560px);
+    margin: 0 auto;
+    transform: none;
+  }
+
+  .preview {
+    grid-area: auto;
+    width: min(100%, 560px);
+    margin: 0 auto;
+  }
+}
+
+@media print {
+  @page {
+    size: 8in 10in;
+    margin: 0;
+  }
+
+  :global(html),
+  :global(body) {
+    width: 8in;
+    height: 10in;
+    margin: 0;
+  }
+
+  .page {
+    padding: 0;
+    background: white;
+  }
+
+  .header,
+  .controls,
+  :global(.homeNav) {
+    display: none;
+  }
+
+  .workspace {
+    display: block;
+    max-width: none;
+  }
+
+  .preview {
+    display: block;
+    width: 8in;
+    height: 10in;
+  }
+
+  .poster {
+    width: 8in;
+    height: 10in;
+    margin: 0;
+    box-sizing: border-box;
+    box-shadow: none;
+    print-color-adjust: exact;
+  }
+}
+
+@keyframes liquid {
+  from {
+    transform: translate3d(-3%, -2%, 0) rotate(-4deg) scale(1);
+  }
+
+  to {
+    transform: translate3d(4%, 3%, 0) rotate(5deg) scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poster::before {
+    animation: none !important;
+  }
+}
