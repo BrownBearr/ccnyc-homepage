@@ -17,7 +17,7 @@ export default function ProjectionStage({ signupEndpoint }: ProjectionStageProps
               aria-hidden="true"
               aria-labelledby="aboutTitle"
               inert
-              tabIndex={-1}
+              tabIndex={0}
             >
               <h2 className="sr-only" id="aboutTitle">About</h2>
               <p>
@@ -39,7 +39,7 @@ export default function ProjectionStage({ signupEndpoint }: ProjectionStageProps
               </ul>
             </div>
 
-            <div className="panel agenda-box" id="shotAgenda" aria-hidden="true" aria-labelledby="agendaTitle" inert tabIndex={-1}>
+            <div className="panel agenda-box" id="shotAgenda" aria-hidden="true" aria-labelledby="agendaTitle" inert tabIndex={0}>
               <h2 className="title" id="agendaTitle">Tuesday meeting agenda · 6–8 PM</h2>
               <div className="schedule">
                 <div><time>6:00–7:20</time><p><strong>Chill, code, collaborate</strong></p></div>
@@ -63,7 +63,7 @@ export default function ProjectionStage({ signupEndpoint }: ProjectionStageProps
               aria-hidden="true"
               aria-labelledby="signupTitle"
               inert
-              tabIndex={-1}
+              tabIndex={0}
               data-signup-endpoint={signupEndpoint}
             >
               <div className="head">

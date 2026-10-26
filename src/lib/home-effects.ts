@@ -1010,7 +1010,7 @@ void main(){
   const shot = document.getElementById('shot');
   const calendar = document.createElement('div');
   calendar.className = 'panel calendar-panel'; calendar.id = 'shotCalendar'; calendar.setAttribute('aria-hidden', 'true');
-  calendar.setAttribute('aria-labelledby', 'calendarTitle'); calendar.inert = true; calendar.tabIndex = -1;
+  calendar.setAttribute('aria-labelledby', 'calendarTitle'); calendar.inert = true; calendar.tabIndex = 0;
   const MEETUPS = [
     ['10/13/26', 'Brooklyn Public Library Central Library, Info Commons lab'],
     ['10/20/26', 'TBD'],
